@@ -14,16 +14,14 @@ target_ip = "192.168.1.1/24"
 devices_info = {}
 
 def nom_check(ip):
-    namesear = subprocess.run(f"nslookup {ip}", text=True, capture_output=True).stdout
-    namesear = str(namesear)
-    if "Nom" or "Name" in namesear:
-        namesear = namesear.split()
-        name = namesear[-3]
-        if ".home" in name:
-            name = name.strip(".home")
-    else:
-        name = "nom introuvable"
-    return name
+    try:
+        name, _, _ = socket.gethostbyaddr(ip)
+        return name.split('.')[0]  # Retourne le nom sans domaine
+    except socket.herror:
+        return "nom introuvable"
+
+# Exemple d'utilisation
+print(nom_check("192.168.1.15"))
 
 def ip_to_int(ip):
     return struct.unpack("!I", socket.inet_aton(ip))[0]
